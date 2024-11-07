@@ -5,9 +5,6 @@ import {PriceConvertor} from "./PriceConvertor.sol";
 import {AggregatorV3Interface} from
     "../lib/chainlink-brownie-contracts/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol";
 
-// 700,949 - txCost without constant & immutable
-// 654,956 - txCost with constant & immutable
-
 error NotOwner();
 
 contract CrowdFund {
@@ -17,7 +14,7 @@ contract CrowdFund {
     address public immutable i_owner;
 
     // address priceFeedAddress = 0x694AA1769357215DE4FAC081bf1f309aDC325306;
-    int256 public constant minAmount = 5;
+    int256 public constant minAmount = 5 * 1e18;
 
     address[] public listOfFunders;
     mapping(address => uint256) public funderToAmountRaised;
@@ -30,6 +27,10 @@ contract CrowdFund {
         require(int256(msg.value).getConversionRate() > minAmount, "Minimum amount to send is 5");
         listOfFunders.push(msg.sender);
         funderToAmountRaised[msg.sender] = funderToAmountRaised[msg.sender] + msg.value;
+    }
+
+    function getVersion() public view returns (uint256) {
+        return PriceConvertor.getVersion();
     }
 
     function withdarw() public onlyOwner {
