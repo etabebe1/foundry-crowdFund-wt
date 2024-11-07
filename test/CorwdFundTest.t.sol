@@ -2,6 +2,7 @@
 pragma solidity 0.8.24;
 
 import {CrowdFund} from "../src/CrowdFund.sol";
+import {DeployCrowdFund} from "../script/DeployCrowdFund.s.sol";
 import {Test, console} from "forge-std/Test.sol";
 
 contract CrowdFundTest is Test {
@@ -10,7 +11,9 @@ contract CrowdFundTest is Test {
     address priceFeedAddress = 0x694AA1769357215DE4FAC081bf1f309aDC325306;
 
     function setUp() external {
-        crowdFund = new CrowdFund(priceFeedAddress);
+        // crowdFund = new CrowdFund(priceFeedAddress);
+        DeployCrowdFund deployCrowdFund = new DeployCrowdFund();
+        crowdFund = deployCrowdFund.run();
     }
 
     function testMinAmountIsFive() public view {
@@ -18,7 +21,7 @@ contract CrowdFundTest is Test {
     }
 
     function testCrowdFundOwner() public view {
-        assertEq(crowdFund.i_owner(), address(this));
+        assertEq(crowdFund.i_owner(), msg.sender);
     }
 
     // In the function bellow we're calling a function outside of our contract
