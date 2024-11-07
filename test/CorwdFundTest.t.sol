@@ -7,8 +7,10 @@ import {Test, console} from "forge-std/Test.sol";
 contract CrowdFundTest is Test {
     CrowdFund crowdFund;
 
+    address priceFeedAddress = 0x694AA1769357215DE4FAC081bf1f309aDC325306;
+
     function setUp() external {
-        crowdFund = new CrowdFund();
+        crowdFund = new CrowdFund(priceFeedAddress);
     }
 
     function testMinAmountIsFive() public view {

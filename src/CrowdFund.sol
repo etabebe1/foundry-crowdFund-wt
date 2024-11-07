@@ -5,7 +5,7 @@ import {PriceConvertor} from "./PriceConvertor.sol";
 import {AggregatorV3Interface} from
     "../lib/chainlink-brownie-contracts/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol";
 
-error NotOwner();
+error CrowdFund_NotOwner();
 
 contract CrowdFund {
     using PriceConvertor for int256;
@@ -19,18 +19,22 @@ contract CrowdFund {
     address[] public listOfFunders;
     mapping(address => uint256) public funderToAmountRaised;
 
-    constructor() {
+    AggregatorV3Interface private s_priceFeed;
+
+    constructor(address priceFeedAddress) {
         i_owner = msg.sender;
+        s_priceFeed = AggregatorV3Interface(priceFeedAddress);
     }
 
     function fund() public payable {
-        require(int256(msg.value).getConversionRate() > minAmount, "Minimum amount to send is 5");
+        require(int256(msg.value).getConversionRate(s_priceFeed) > minAmount, "Minimum amount to send is 5");
+
         listOfFunders.push(msg.sender);
         funderToAmountRaised[msg.sender] = funderToAmountRaised[msg.sender] + msg.value;
     }
 
     function getVersion() public view returns (uint256) {
-        return PriceConvertor.getVersion();
+        return PriceConvertor.getVersion(s_priceFeed);
     }
 
     function withdarw() public onlyOwner {
@@ -57,7 +61,7 @@ contract CrowdFund {
     modifier onlyOwner() {
         // require(msg.sender == owner, "Only owner can call this functoin");
         if (msg.sender != i_owner) {
-            revert NotOwner();
+            revert CrowdFund_NotOwner();
         }
         _;
     }
