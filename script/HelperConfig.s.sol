@@ -9,24 +9,26 @@ pragma solidity ^0.8.24;
 contract HelperConfig {
     // If we are on a local anvil, we deploy mock
     // Otherwise, grap the existing address from the live network
-
     NetworkConfig public activeNetworkConfig;
 
     // an object we need form sepolia test net
     struct NetworkConfig {
         address priceFeedAddress;
+        address priceFeedAddress2;
     }
 
     constructor() {
         // if we are on a local anvil, deploy mock
         if (block.chainid == 11155111) {
-            activeNetworkConfig = getSepoliaEthConfig();
+            // Sepolia
+            activeNetworkConfig = getSepoliaNetwork();
         } else {
-            activeNetworkConfig = getSepoliaEthConfig();
+            // Anvil
+            activeNetworkConfig = getAnvilNetwork();
         }
     }
 
-    function getSepoliaEthConfig() public pure returns (NetworkConfig memory) {
+    function getSepoliaNetwork() public pure returns (NetworkConfig memory) {
         // we need to get the price feed address from sepolia
         NetworkConfig memory sepoliaConfig = NetworkConfig({
             priceFeedAddress: 0x694AA1769357215DE4FAC081bf1f309aDC325306
@@ -35,5 +37,5 @@ contract HelperConfig {
         return sepoliaConfig;
     }
 
-    function getAnvilEthConfig() public pure {}
+    function getAnvilNetwork() public pure returns (NetworkConfig memory) {}
 }
