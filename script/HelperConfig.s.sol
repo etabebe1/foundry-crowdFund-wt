@@ -13,6 +13,8 @@ contract HelperConfig is Script {
     // If we are on a local anvil, we deploy mock
     // Otherwise, grap the existing address from the live network
     NetworkConfig public activeNetworkConfig;
+    uint8 public constant _decimal = 18;
+    int256 public constant _initalAnswer = 2800;
 
     // an object we need form sepolia test net
     struct NetworkConfig {
@@ -55,9 +57,6 @@ contract HelperConfig is Script {
     }
 
     function getAnvilNetwork() public returns (NetworkConfig memory) {
-        uint8 _decimal = 18;
-        int256 _initalAnswer = 2800;
-
         vm.startBroadcast();
         MockV3Aggregator mockPriceFeed = new MockV3Aggregator(
             _decimal,
