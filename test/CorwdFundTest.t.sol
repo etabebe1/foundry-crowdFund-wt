@@ -36,6 +36,6 @@ contract CrowdFundTest is Test {
     //  - Testing how our code on a real environment but not live (prod)
     function testPriceFeedVersion() public view {
         uint256 version = crowdFund.getVersion();
-        assertEq(version, 4);
+        assertEq(version, 4); // on Mainnet - v = 6 and Sepolia or Anvil v = 4
     }
 }

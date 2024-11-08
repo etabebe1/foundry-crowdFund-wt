@@ -6,7 +6,10 @@ pragma solidity ^0.8.24;
 // 2. Keep track of contract address accross different chains
 // Sepolia ETH/USD !== Mainnet ETH/USD (Addresses)
 
-contract HelperConfig {
+import {Script, console} from "forge-std/Script.sol";
+import {MockV3Aggregator} from "../test/mock/MockAggregatorV3.sol";
+
+contract HelperConfig is Script {
     // If we are on a local anvil, we deploy mock
     // Otherwise, grap the existing address from the live network
     NetworkConfig public activeNetworkConfig;
@@ -16,25 +19,56 @@ contract HelperConfig {
         address priceFeedAddress;
     }
 
-    constructor() {
+    constructor(address priceFeedAddress) {
         // if we are on a local anvil, deploy mock
         if (block.chainid == 11155111) {
             // Sepolia
-            activeNetworkConfig = getSepoliaNetwork();
+            activeNetworkConfig = getSepoliaNetwork(priceFeedAddress);
+        } else if (block.chainid == 1) {
+            activeNetworkConfig = getMainnetNetwork(priceFeedAddress);
         } else {
             // Anvil
             activeNetworkConfig = getAnvilNetwork();
         }
     }
 
-    function getSepoliaNetwork() public pure returns (NetworkConfig memory) {
+    function getSepoliaNetwork(
+        address _priceFeedAddress
+    ) public pure returns (NetworkConfig memory) {
         // we need to get the price feed address from sepolia
         NetworkConfig memory sepoliaConfig = NetworkConfig({
-            priceFeedAddress: 0x694AA1769357215DE4FAC081bf1f309aDC325306
+            priceFeedAddress: _priceFeedAddress
         });
 
         return sepoliaConfig;
     }
 
-    function getAnvilNetwork() public pure returns (NetworkConfig memory) {}
+    function getMainnetNetwork(
+        address _priceFeedAddress
+    ) public pure returns (NetworkConfig memory) {
+        // we need to get the price feed address from sepolia
+        NetworkConfig memory sepoliaConfig = NetworkConfig({
+            priceFeedAddress: _priceFeedAddress
+        });
+
+        return sepoliaConfig;
+    }
+
+    function getAnvilNetwork() public returns (NetworkConfig memory) {
+        uint8 _decimal = 18;
+        int256 _initalAnswer = 2800;
+
+        vm.startBroadcast();
+        MockV3Aggregator mockPriceFeed = new MockV3Aggregator(
+            _decimal,
+            _initalAnswer
+        );
+        vm.stopBroadcast();
+
+        NetworkConfig memory anvilConfig = NetworkConfig({
+            priceFeedAddress: address(mockPriceFeed)
+        });
+
+        return anvilConfig;
+    }
 }
