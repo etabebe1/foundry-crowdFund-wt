@@ -14,7 +14,6 @@ contract HelperConfig {
     // an object we need form sepolia test net
     struct NetworkConfig {
         address priceFeedAddress;
-        address priceFeedAddress2;
     }
 
     constructor() {
