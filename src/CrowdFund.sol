@@ -2,8 +2,7 @@
 pragma solidity ^0.8.24;
 
 import {PriceConvertor} from "./PriceConvertor.sol";
-import {AggregatorV3Interface} from
-    "../lib/chainlink-brownie-contracts/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol";
+import {AggregatorV3Interface} from "../lib/chainlink-brownie-contracts/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol";
 
 error CrowdFund_NotOwner();
 
@@ -13,11 +12,10 @@ contract CrowdFund {
     // constants and immutable - keywords to reduce txCost
     address public immutable i_owner;
 
-    // address priceFeedAddress = 0x694AA1769357215DE4FAC081bf1f309aDC325306;
     int256 public constant minAmount = 5 * 1e18;
 
-    address[] public listOfFunders;
-    mapping(address => uint256) public funderToAmountRaised;
+    address[] public s_listOfFunders;
+    mapping(address => uint256) public s_funderToAmountRaised;
 
     AggregatorV3Interface private s_priceFeed;
 
@@ -27,10 +25,16 @@ contract CrowdFund {
     }
 
     function fund() public payable {
-        require(int256(msg.value).getConversionRate(s_priceFeed) > minAmount, "Minimum amount to send is 5");
+        // Ensure that the conversion rate is in the correct unit and is greater than the minimum amount
+        int256 conversionRate = int256(msg.value).getConversionRate(
+            s_priceFeed
+        );
+        require(conversionRate > minAmount, "Minimum amount to send is 5");
 
-        listOfFunders.push(msg.sender);
-        funderToAmountRaised[msg.sender] = funderToAmountRaised[msg.sender] + msg.value;
+        s_listOfFunders.push(msg.sender);
+        s_funderToAmountRaised[msg.sender] =
+            s_funderToAmountRaised[msg.sender] +
+            msg.value;
     }
 
     function getVersion() public view returns (uint256) {
@@ -38,22 +42,24 @@ contract CrowdFund {
     }
 
     function withdarw() public onlyOwner {
-        for (uint256 funder = 0; funder > listOfFunders.length; funder++) {
-            address funderAddress = listOfFunders[funder];
-            funderToAmountRaised[funderAddress] = 0;
+        for (uint256 funder = 0; funder > s_listOfFunders.length; funder++) {
+            address funderAddress = s_listOfFunders[funder];
+            s_funderToAmountRaised[funderAddress] = 0;
         }
 
-        listOfFunders = new address[](0);
+        s_listOfFunders = new address[](0);
 
         // msg.sender = address
         // payable(msg.sender) = pyable address
         // transfer - automatically reverts if transaction failed
-        payable(msg.sender).transfer(address(this).balance);
+        // payable(msg.sender).transfer(address(this).balance);
         // send - reverts if we add error handling mechanism like (require)
-        bool sendSuccess = payable(msg.sender).send(address(this).balance);
-        require(sendSuccess, "send failed");
+        // bool sendSuccess = payable(msg.sender).send(address(this).balance);
+        // require(sendSuccess, "send failed");
         // call - returns a bool and byte code ()
-        (bool txSent,) = payable(msg.sender).call{value: address(this).balance}("");
+        (bool txSent, ) = payable(msg.sender).call{
+            value: address(this).balance
+        }("");
         require(txSent, "send failed");
         // which one to choose call
     }
@@ -72,5 +78,19 @@ contract CrowdFund {
 
     fallback() external payable {
         fund();
+    }
+
+    // View | Pure function as (Getter)
+
+    function getAdressToAmountFunded(
+        address fundingAddress
+    ) external view returns (uint256) {
+        return s_funderToAmountRaised[fundingAddress];
+    }
+
+    function getAddressofFunder(
+        uint256 _index
+    ) external view returns (address) {
+        return s_listOfFunders[_index];
     }
 }

@@ -8,13 +8,11 @@ import {HelperConfig} from "./HelperConfig.s.sol";
 contract DeployCrowdFund is Script {
     //-> ETH/USD PriceFeedAddress
     address priceFeedAddress = 0x694AA1769357215DE4FAC081bf1f309aDC325306; // Sepolia
-    address priceFeedAddressMainnet =
-        0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419; //Mainnet
+    address priceFeedAddressMainnet = 0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419; //Mainnet
 
     function run() external returns (CrowdFund) {
         HelperConfig helperConfig = new HelperConfig(priceFeedAddressMainnet);
-        address ethPriceAddrFromHelperConfig = helperConfig
-            .activeNetworkConfig(); // get the price feed address from the config
+        address ethPriceAddrFromHelperConfig = helperConfig.activeNetworkConfig(); // get the price feed address from the config
 
         console.log(ethPriceAddrFromHelperConfig);
 

@@ -8,7 +8,7 @@ import {Test, console} from "forge-std/Test.sol";
 contract CrowdFundTest is Test {
     CrowdFund crowdFund;
 
-    address priceFeedAddress = 0x694AA1769357215DE4FAC081bf1f309aDC325306;
+    address USER = makeAddr("user");
 
     function setUp() external {
         // crowdFund = new CrowdFund(priceFeedAddress);
@@ -38,4 +38,25 @@ contract CrowdFundTest is Test {
         uint256 version = crowdFund.getVersion();
         assertEq(version, 4); // on Mainnet - v = 6 and Sepolia or Anvil v = 4
     }
+
+    function testFundFailsWitoutEnoughEth(uint256 amount) public {
+        vm.expectRevert("Minimum amount to send is 5"); // Meaning we expect the next TX will likely fail
+        crowdFund.fund{value: 0}(); //sending 0 ETH making it to fail
+        // crowdFund.fund{value: 0}();
+    }
+
+    function testFundFailsWitoutEnoughEth() public {
+        vm.expectRevert("Minimum amount to send is 5"); // Expecting revert with this exact message
+        // crowdFund.fund{value: 0}(); // Trying to fund with 0 ETH
+        crowdFund.fund(); // Tyrying to send no value //results failing
+    }
+
+    // function testFundUpdatesFundedDataStructure() public {
+    //     vm.prank(USER);
+
+    //     crowdFund.fund{value: 10e18}();
+
+    //     uint256 amountFunded = crowdFund.getAdressToAmountFunded(USER);
+    //     assertEq(amountFunded, 10e18);
+    // }
 }
