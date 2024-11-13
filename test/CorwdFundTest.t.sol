@@ -24,7 +24,7 @@ contract CrowdFundTest is Test {
     }
 
     function testCrowdFundOwner() public view {
-        assertEq(crowdFund.i_owner(), msg.sender);
+        assertEq(crowdFund.getOwner(), msg.sender);
     }
 
     // In the function bellow we're calling a function outside of our contract
@@ -54,7 +54,7 @@ contract CrowdFundTest is Test {
         uint256 amountFunded = crowdFund.getAdressToAmountFunded(USER);
 
         assertEq(amountFunded, SEND_VALUE);
-        console.log(amountFunded);
+        // console.log(amountFunded);
     }
 
     modifier funded() {
@@ -66,12 +66,32 @@ contract CrowdFundTest is Test {
     function testAddFunderToFundersArray() public funded {
         address addressOfFunder = crowdFund.getAddressOfFunder(0);
         assertEq(addressOfFunder, USER);
-        console.log(addressOfFunder, USER);
+        // console.log(addressOfFunder, USER);
     }
 
-    function testOnlyOwnerWithdrawFunds() public funded {
+    function testAnyUserCannotWithdrawFunds() public funded {
         vm.expectRevert();
         vm.prank(USER);
         crowdFund.withdarw();
+    }
+
+    function testOnlyOwnerCanWithdrawFund() public {
+        // Arrange
+        uint256 startingOwnerBalance = crowdFund.getOwner().balance;
+        uint256 startingCrowdFundBalance = address(crowdFund).balance;
+
+        // Act
+        vm.prank(crowdFund.getOwner());
+        crowdFund.withdarw();
+
+        // Assert
+        uint256 endingCrowdFundBalance = address(crowdFund).balance;
+        uint256 endingOwnerBalance = crowdFund.getOwner().balance;
+
+        assertEq(endingCrowdFundBalance, 0);
+        assertEq(
+            endingOwnerBalance,
+            startingOwnerBalance + startingCrowdFundBalance
+        );
     }
 }
