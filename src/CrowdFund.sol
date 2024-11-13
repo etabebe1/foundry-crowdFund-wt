@@ -45,7 +45,7 @@ contract CrowdFund {
     }
 
     function withdarw() public onlyOwner {
-        for (uint256 funder = 0; funder > s_listOfFunders.length; funder++) {
+        for (uint256 funder = 0; funder < s_listOfFunders.length; funder++) {
             address funderAddress = s_listOfFunders[funder];
             s_funderToAmountRaised[funderAddress] = 0;
         }

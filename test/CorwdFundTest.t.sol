@@ -75,7 +75,7 @@ contract CrowdFundTest is Test {
         crowdFund.withdarw();
     }
 
-    function testOnlyOwnerCanWithdrawFund() public {
+    function testOnlyOwnerCanWithdrawFund() public funded {
         // Arrange
         uint256 startingOwnerBalance = crowdFund.getOwner().balance;
         uint256 startingCrowdFundBalance = address(crowdFund).balance;
@@ -85,13 +85,48 @@ contract CrowdFundTest is Test {
         crowdFund.withdarw();
 
         // Assert
-        uint256 endingCrowdFundBalance = address(crowdFund).balance;
         uint256 endingOwnerBalance = crowdFund.getOwner().balance;
+        uint256 endingCrowdFundBalance = address(crowdFund).balance;
 
         assertEq(endingCrowdFundBalance, 0);
         assertEq(
             endingOwnerBalance,
             startingOwnerBalance + startingCrowdFundBalance
         );
+    }
+
+    function testWithdrawFromMultipleAddress() public {
+        // Arrange
+        uint256 totalNumberOfFunder = 10;
+        uint256 numberOfFunderStartesFrom = 1;
+
+        for (
+            uint256 i = numberOfFunderStartesFrom;
+            i <= totalNumberOfFunder;
+            i++
+        ) {
+            hoax(address(uint160(i)), SEND_VALUE);
+            crowdFund.fund{value: SEND_VALUE}();
+        }
+        uint256 startingOwnerBalance = crowdFund.getOwner().balance;
+        uint256 startingCrowdFundBalance = address(crowdFund).balance;
+
+        // Act
+        vm.startPrank(crowdFund.getOwner());
+        crowdFund.withdarw();
+        vm.stopPrank();
+
+        // Assert
+        uint256 endingOwnerBalance = crowdFund.getOwner().balance;
+        uint256 endingCrowdFundBalance = address(crowdFund).balance;
+
+        console.log(startingCrowdFundBalance);
+        console.log(startingOwnerBalance);
+        assertEq(endingCrowdFundBalance, 0);
+        assertEq(
+            startingOwnerBalance + startingCrowdFundBalance,
+            endingOwnerBalance
+        );
+        // console.log(startingOwnerBalance + startingCrowdFundBalance);
     }
 }
