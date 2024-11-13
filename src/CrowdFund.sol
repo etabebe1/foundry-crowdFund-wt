@@ -3,6 +3,7 @@ pragma solidity ^0.8.24;
 
 import {PriceConvertor} from "./PriceConvertor.sol";
 import {AggregatorV3Interface} from "../lib/chainlink-brownie-contracts/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol";
+import {console} from "forge-std/console.sol";
 
 error CrowdFund_NotOwner();
 
@@ -12,7 +13,7 @@ contract CrowdFund {
     // constants and immutable - keywords to reduce txCost
     address public immutable i_owner;
 
-    int256 public constant minAmount = 5 * 1e18;
+    int256 public constant minAmount = 5 * 10 ** 18;
 
     address[] public s_listOfFunders;
     mapping(address => uint256) public s_funderToAmountRaised;
@@ -29,6 +30,9 @@ contract CrowdFund {
         int256 conversionRate = int256(msg.value).getConversionRate(
             s_priceFeed
         );
+
+        // console.log("conversion rate:", conversionRate);
+
         require(conversionRate > minAmount, "Minimum amount to send is 5");
 
         s_listOfFunders.push(msg.sender);

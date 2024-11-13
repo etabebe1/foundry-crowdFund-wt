@@ -9,6 +9,7 @@ contract CrowdFundTest is Test {
     CrowdFund crowdFund;
 
     address USER = makeAddr("user");
+    uint256 SEND_VALUE = 10e18;
 
     function setUp() external {
         // crowdFund = new CrowdFund(priceFeedAddress);
@@ -39,24 +40,16 @@ contract CrowdFundTest is Test {
         assertEq(version, 4); // on Mainnet - v = 6 and Sepolia or Anvil v = 4
     }
 
-    function testFundFailsWitoutEnoughEth(uint256 amount) public {
-        vm.expectRevert("Minimum amount to send is 5"); // Meaning we expect the next TX will likely fail
-        crowdFund.fund{value: 0}(); //sending 0 ETH making it to fail
-        // crowdFund.fund{value: 0}();
+    function testFundFailsWitoutEnoughEth() public payable {
+        vm.expectRevert("Minimum amount to send is 5"); // Expecting revert for the next line
+        // crowdFund.fund{value: SEND_VALUE}(); // Trying to fund with > minAmount of ETH
+        crowdFund.fund{value: 0}(); // Tryying to send no value //results failing
     }
 
-    function testFundFailsWitoutEnoughEth() public {
-        vm.expectRevert("Minimum amount to send is 5"); // Expecting revert with this exact message
-        // crowdFund.fund{value: 0}(); // Trying to fund with 0 ETH
-        crowdFund.fund(); // Tyrying to send no value //results failing
+    function testFundUpdatesFundedDataStructure() public {
+        crowdFund.fund{value: SEND_VALUE}();
+        uint256 amountFunded = crowdFund.getAdressToAmountFunded(address(this));
+
+        console.log(amountFunded);
     }
-
-    // function testFundUpdatesFundedDataStructure() public {
-    //     vm.prank(USER);
-
-    //     crowdFund.fund{value: 10e18}();
-
-    //     uint256 amountFunded = crowdFund.getAdressToAmountFunded(USER);
-    //     assertEq(amountFunded, 10e18);
-    // }
 }
