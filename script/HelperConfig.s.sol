@@ -34,30 +34,44 @@ contract HelperConfig is Script {
         }
     }
 
-    function getSepoliaNetwork(address _priceFeedAddress) public pure returns (NetworkConfig memory) {
+    function getSepoliaNetwork(
+        address _priceFeedAddress
+    ) public pure returns (NetworkConfig memory) {
         // we need to get the price feed address from sepolia
-        NetworkConfig memory sepoliaConfig = NetworkConfig({priceFeedAddress: _priceFeedAddress});
+        NetworkConfig memory sepoliaConfig = NetworkConfig({
+            priceFeedAddress: _priceFeedAddress
+        });
 
         return sepoliaConfig;
     }
 
-    function getMainnetNetwork(address _priceFeedAddress) public pure returns (NetworkConfig memory) {
+    function getMainnetNetwork(
+        address _priceFeedAddress
+    ) public pure returns (NetworkConfig memory) {
         // we need to get the price feed address from sepolia
-        NetworkConfig memory sepoliaConfig = NetworkConfig({priceFeedAddress: _priceFeedAddress});
+        NetworkConfig memory sepoliaConfig = NetworkConfig({
+            priceFeedAddress: _priceFeedAddress
+        });
 
         return sepoliaConfig;
     }
 
+    // TODO: Check getOrCreateAnvilNetwork function it's not running properly on a local anvil chain
     function getOrCreateAnvilNetwork() public returns (NetworkConfig memory) {
         if (activeNetworkConfig.priceFeedAddress != address(0)) {
             return activeNetworkConfig;
         }
 
         vm.startBroadcast();
-        MockV3Aggregator mockPriceFeed = new MockV3Aggregator(_decimal, _initalAnswer);
+        MockV3Aggregator mockPriceFeed = new MockV3Aggregator(
+            _decimal,
+            _initalAnswer
+        );
         vm.stopBroadcast();
 
-        NetworkConfig memory anvilConfig = NetworkConfig({priceFeedAddress: address(mockPriceFeed)});
+        NetworkConfig memory anvilConfig = NetworkConfig({
+            priceFeedAddress: address(mockPriceFeed)
+        });
 
         return anvilConfig;
     }
