@@ -8,13 +8,15 @@ import {Test, console} from "forge-std/Test.sol";
 contract CrowdFundTest is Test {
     CrowdFund crowdFund;
 
-    address USER = makeAddr("user");
+    address USER = makeAddr("user"); // prank address
     uint256 SEND_VALUE = 10e18;
+    uint256 USER_START_BALANCE = 50 ether;
 
     function setUp() external {
         // crowdFund = new CrowdFund(priceFeedAddress);
         DeployCrowdFund deployCrowdFund = new DeployCrowdFund();
         crowdFund = deployCrowdFund.run();
+        vm.deal(USER, USER_START_BALANCE);
     }
 
     function testMinAmountIsFive() public view {
@@ -47,9 +49,11 @@ contract CrowdFundTest is Test {
     }
 
     function testFundUpdatesFundedDataStructure() public {
+        vm.prank(USER); // Means next TX will be sent by USER
         crowdFund.fund{value: SEND_VALUE}();
-        uint256 amountFunded = crowdFund.getAdressToAmountFunded(address(this));
+        uint256 amountFunded = crowdFund.getAdressToAmountFunded(USER);
 
+        assertEq(amountFunded, SEND_VALUE);
         console.log(amountFunded);
     }
 }
