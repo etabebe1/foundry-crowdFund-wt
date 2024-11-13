@@ -120,13 +120,10 @@ contract CrowdFundTest is Test {
         uint256 endingOwnerBalance = crowdFund.getOwner().balance;
         uint256 endingCrowdFundBalance = address(crowdFund).balance;
 
-        console.log(startingCrowdFundBalance);
-        console.log(startingOwnerBalance);
         assertEq(endingCrowdFundBalance, 0);
         assertEq(
             startingOwnerBalance + startingCrowdFundBalance,
             endingOwnerBalance
         );
-        // console.log(startingOwnerBalance + startingCrowdFundBalance);
     }
 }
