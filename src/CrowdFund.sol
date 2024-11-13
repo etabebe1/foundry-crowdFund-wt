@@ -44,6 +44,27 @@ contract CrowdFund {
         return PriceConvertor.getVersion(s_priceFeed);
     }
 
+    function cheapWithdraw() public onlyOwner {
+        uint256 fundersLength = s_listOfFunders.length;
+
+        for (
+            uint256 funderIndex = 0;
+            funderIndex < fundersLength;
+            funderIndex++
+        ) {
+            address funderAddress = s_listOfFunders[funderIndex];
+            s_funderToAmountRaised[funderAddress] = 0;
+        }
+
+        s_listOfFunders = new address[](0);
+
+        (bool txSent, ) = payable(msg.sender).call{
+            value: address(this).balance
+        }("");
+        require(txSent, "send failed");
+        // which one to choose call
+    }
+
     function withdarw() public onlyOwner {
         for (uint256 funder = 0; funder < s_listOfFunders.length; funder++) {
             address funderAddress = s_listOfFunders[funder];
