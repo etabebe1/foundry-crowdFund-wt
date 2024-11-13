@@ -56,4 +56,22 @@ contract CrowdFundTest is Test {
         assertEq(amountFunded, SEND_VALUE);
         console.log(amountFunded);
     }
+
+    modifier funded() {
+        vm.prank(USER);
+        crowdFund.fund{value: SEND_VALUE}();
+        _;
+    }
+
+    function testAddFunderToFundersArray() public funded {
+        address addressOfFunder = crowdFund.getAddressOfFunder(0);
+        assertEq(addressOfFunder, USER);
+        console.log(addressOfFunder, USER);
+    }
+
+    function testOnlyOwnerWithdrawFunds() public funded {
+        vm.expectRevert();
+        vm.prank(USER);
+        crowdFund.withdarw();
+    }
 }

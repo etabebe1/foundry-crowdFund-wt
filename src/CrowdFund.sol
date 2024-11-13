@@ -12,7 +12,6 @@ contract CrowdFund {
 
     // constants and immutable - keywords to reduce txCost
     address public immutable i_owner;
-
     int256 public constant minAmount = 5 * 10 ** 18;
 
     address[] public s_listOfFunders;
@@ -92,7 +91,7 @@ contract CrowdFund {
         return s_funderToAmountRaised[fundingAddress];
     }
 
-    function getAddressofFunder(
+    function getAddressOfFunder(
         uint256 _index
     ) external view returns (address) {
         return s_listOfFunders[_index];
