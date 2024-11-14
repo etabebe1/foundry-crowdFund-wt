@@ -19,6 +19,7 @@ This is a simple foundry crowd-fund solidity project with a deployment script, t
   - [Scripts](#scripts)
     - [Withdraw](#withdraw)
   - [Estimate gas](#estimate-gas)
+  - [Integration](#foundry-devops)
 - [Formatting](#formatting)
 - [Additional Info:](#additional-info)
   - [Let's talk about what "Official" means](#lets-talk-about-what-official-means)
@@ -197,6 +198,14 @@ forge snapshot
 ```
 
 And you'll see an output file called `.gas-snapshot`
+
+## Integration
+
+You can integrate this contract with your own application by using the `CrowdFund` contract's ABI.
+
+In order to keep track of the most recent deployed version of our contract by foundry, we need to install.
+
+`forge install Cyfrin/foundry-devops --no-commit`
 
 # Formatting
 

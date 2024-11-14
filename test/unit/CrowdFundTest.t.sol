@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: SEE LICENSE IN LICENSE
 pragma solidity 0.8.24;
 
-import {CrowdFund} from "../src/CrowdFund.sol";
-import {DeployCrowdFund} from "../script/DeployCrowdFund.s.sol";
+import {CrowdFund} from "../../src/CrowdFund.sol";
+import {DeployCrowdFund} from "../../script/DeployCrowdFund.s.sol";
 import {Test, console} from "forge-std/Test.sol";
 
 contract CrowdFundTest is Test {

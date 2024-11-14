@@ -1,6 +1,18 @@
 [profile.default]
 src = "src"
+test = "unit"
 out = "out"
 libs = ["lib"]
+allow_paths = ["./broadcast", "./"]
+
+fs_permissions = [
+    { access = "read", path = "./broadcast" },
+    { access = "read", path = "./reports" },
+]
+
+# this allow foundry to run a bash script on our mation
+# it is recommended not to use it often times 
+# however, for actions like tracking the latest deployment, we can use it.
+ffi = true 
 
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
